@@ -36,10 +36,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -77,6 +79,9 @@ public class SolvedController extends AbstractSimpleController implements Initia
     private static final String STATUS_UNKNOWN = "";
 
     private static Map<String, String> fields = new LinkedHashMap<String, String>();
+
+    @Inject
+    private Logger logger;
 
     @Override
     public void initialize() throws InitializationException
@@ -228,7 +233,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
                 }
             }
         } catch (Exception ex) {
-            // well, we tried.
+            this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
         }
     }
 
