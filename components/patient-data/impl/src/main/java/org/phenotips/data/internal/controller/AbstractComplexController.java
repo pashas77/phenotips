@@ -186,6 +186,10 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                         terms.add(term);
                     }
                     return terms;
+                } else if (value instanceof JSONArray) {
+                    List list = new LinkedList();
+                    list.addAll((JSONArray) value);
+                    return list;
                 } else {
                     return value.toString();
                 }
@@ -204,6 +208,21 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
             return true;
         } else {
             return null;
+        }
+    }
+
+    /** For different types to ones that can be saved by XWiki.
+     * @return the converted value if `value` is convertible, original `value` otherwise */
+    private Object saveFormat(Object value)
+    {
+        if (value instanceof Boolean) {
+            return (Boolean) value ? 1 : 0;
+        } else {
+            try {
+                return Integer.valueOf(value.toString());
+            } catch (Exception ex) {
+                return value;
+            }
         }
     }
 
@@ -251,6 +270,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                         }
                         ((DBStringListProperty) field).setList(listToStore);
                     } else {
+                        propertyValue = this.saveFormat(propertyValue);
                         field.setValue(propertyValue);
                     }
                 }
