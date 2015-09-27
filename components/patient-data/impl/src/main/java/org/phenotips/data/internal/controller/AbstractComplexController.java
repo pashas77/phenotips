@@ -36,10 +36,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
@@ -66,6 +68,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
     /** Logging helper object. */
     @Inject
     private Logger logger;
+
+    @Inject
+    private Provider<XWikiContext> contextProvider;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -215,6 +220,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
      * @return the converted value if `value` is convertible, original `value` otherwise */
     private Object saveFormat(Object value)
     {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof Boolean) {
             return (Boolean) value ? 1 : 0;
         } else {
@@ -261,7 +269,7 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                 BaseProperty<ObjectPropertyReference> field =
                     (BaseProperty<ObjectPropertyReference>) dataHolder.getField(propertyName);
                 Object propertyValue = data.get(propertyName);
-                if (field != null && propertyValue != null) {
+                if (field != null) {
                     if (this.getCodeFields().contains(propertyName) && this.isCodeFieldsOnly()) {
                         List<VocabularyProperty> terms = (List<VocabularyProperty>) propertyValue;
                         List<String> listToStore = new LinkedList<>();
@@ -275,6 +283,9 @@ public abstract class AbstractComplexController<T> implements PatientDataControl
                     }
                 }
             }
+            XWikiContext context = this.contextProvider.get();
+            context.getWiki()
+                .saveDocument(doc, String.format("Updated %s history from JSON", this.getName()), true, context);
         } catch (Exception ex) {
             this.logger.error("Could not load patient document or some unknown error has occurred", ex.getMessage());
         }
