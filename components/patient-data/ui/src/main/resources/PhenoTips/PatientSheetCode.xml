@@ -825,8 +825,11 @@ document.observe('xwiki:dom:loaded', function()
                deleteTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item').__source;
                  if (source._ynpicker) {
-                   source._ynpicker._onUnselect();
-                 } else {
+				   var Deleteresponse = confirm("Are you sure you want to delete?\nPlease press OK to delete or cancel.");
+				   if (Deleteresponse == true) {
+                     source._ynpicker._onUnselect();
+				    }
+				  } else {
                    source.click();
                  }
                });
