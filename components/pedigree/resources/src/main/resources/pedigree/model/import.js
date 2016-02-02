@@ -209,6 +209,8 @@ define([
 
         // first pass: add all vertices and assign vertex IDs
         for (var i = 0; i < inputLines.length; i++) {
+            if (inputLines[i].charAt(0) == '#')
+                continue;
 
             inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9_.\-\s*]/g, ' ');
             inputLines[i] = inputLines[i].replace(/^\s+|\s+$/g, '');  // trim()
@@ -294,6 +296,9 @@ define([
 
         // second pass (once all vertex IDs are known): process edges
         for (var i = 0; i < inputLines.length; i++) {
+            if (inputLines[i].charAt(0) == '#')
+                continue;
+
             var parts = inputLines[i].split(/\s+/);
 
             var thisPersonName = parts[1];
@@ -900,7 +905,7 @@ define([
 
            // if there are no children, create a placeholder child
            if (newG.getOutEdges(chhubID).length == 0) {
-               var placeholderID = newG._addVertex(null, TYPE.PERSON, {"gender": "U", "placeholder":true}, newG.defaultPersonNodeWidth );
+               var placeholderID = newG._addVertex(null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder":true}, newG.defaultPersonNodeWidth );
                newG.addEdge( chhubID, placeholderID, defaultEdgeWeight );
            }
 
@@ -1403,8 +1408,8 @@ define([
                 if (this.relationships[partnerID1] === undefined) this.relationships[partnerID1] = {};
                 if (this.relationships[partnerID2] === undefined) this.relationships[partnerID2] = {};
 
-                var relID   = this.newG._addVertex( null, TYPE.RELATIONSHIP, {}, this.newG.defaultNonPersonNodeWidth );
-                var chhubID = this.newG._addVertex( null, TYPE.CHILDHUB,     {}, this.newG.defaultNonPersonNodeWidth );
+                var relID   = this.newG._addVertex( null, BaseGraph.TYPE.RELATIONSHIP, {}, this.newG.defaultNonPersonNodeWidth );
+                var chhubID = this.newG._addVertex( null, BaseGraph.TYPE.CHILDHUB,     {}, this.newG.defaultNonPersonNodeWidth );
 
                 this.newG.addEdge( relID,    chhubID, this.defaultEdgeWeight );
                 this.newG.addEdge( partnerID1, relID,   this.defaultEdgeWeight );
